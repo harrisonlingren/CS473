@@ -29,15 +29,10 @@ import java.util.Date;
 public class Flight {
     @Id
     // flight details
-    private int number;
+    private String code;
     private String origin;
     private String dest;
-    private int distance;
-
-    // time info
-    private Date departure;
-    private Date arrival;
-    private ArrayList days;
+    private ArrayList<Integer> days;
 
     // airline info
     private String airlineCode;
@@ -48,17 +43,27 @@ public class Flight {
     private int planeSeats;
 
     public Flight() {
-        this.number = 0;
-        this.distance = 0;
+        this.code = "";
         this.airlineCode = "";
         this.airlineName = "";
         this.origin = "";
         this.dest = "";
         this.planeCode = "";
         this.planeSeats = 0;
-        this.departure = new Date();
-        this.arrival = new Date();
-        this.days = new ArrayList();
+        this.days = new ArrayList<>();
     }
 
+    public void addDay(int day) {
+        this.days.add(day);
+    }
+
+    public void setFlightDetails(String airlineCode, String airlineName, String code, String origin, String dest, String planeCode, int planeSeats) {
+        this.code = code;
+        this.origin = origin;
+        this.dest = dest;
+        this.airlineCode = airlineCode;
+        this.airlineName = airlineName;
+        this.planeCode = planeCode;
+        this.planeSeats = planeSeats;
+    }
 }

@@ -10,7 +10,10 @@ import java.util.Map;
 public class ProjectFunctions {
     private final Datastore datastore;
 
-    private final Map<String, Airline> airlines = new HashMap<>();
+    private final Map<String, String> airlines = new HashMap<>();
+    private final Map<String, Airport> airports = new HashMap<>();
+    private final Map<String, Integer> planes = new HashMap<>();
+    private final Map<String, Flight> flights = new HashMap<>();
 
     public ProjectFunctions(Datastore datastore) {
         this.datastore = datastore;
@@ -18,33 +21,37 @@ public class ProjectFunctions {
 
     public void addAirline(String airlineCode, String name) {
         System.out.println(String.format("Adding airline %s\t%s", airlineCode, name));
-
-        // Here is an example of creating a mapping object and writing it to the database
-        Airline airline = new Airline(airlineCode, name);
-        datastore.save(airline);
-
-        // It is possible that you might not want to write the airline to a document but rather keep it around
-        // to be used in other documents. Remember, we will be building denormalized documents so there won't
-        // necessarily be a collection for every one of the entities that are being loaded. A map is a good way to do
-        // this. We can still use an object to store the airline data, even if we don't write it to the database.
-        airlines.put(airlineCode, airline);
+        airlines.put(airlineCode, name);
     }
 
     public void addAirport(String airportCode, String state, String city) {
         System.out.println(String.format("Adding airport %s\t%s\t%s", airportCode, state, city));
+
+        Airport thisAirport = new Airport(airportCode, city, state);
+        airports.put(airportCode, thisAirport);
     }
 
     public void addPlane(String planeType, int seats) {
         System.out.println(String.format("Adding plane %s\t%d seats", planeType, seats));
+        planes.put(planeType, seats);
     }
 
     public void addFlight(String airlineCode, String flightCode, int dayOfWeek, String origAirportCode, String destAirportCode, String planeType) {
         System.out.println(String.format("Adding flight %s\tfrom %s to %s on %d\tplane %s", flightCode, origAirportCode, destAirportCode, dayOfWeek, planeType));
 
-        // If you are denormalizing airline then to add a flight you will have to go get the airline data from the map
-        // you are using to store airline information while you are loading the data. To do this use the following
-        // code.
-        Airline airline = airlines.get(airlineCode);
+        Flight thisFlight;
+        int planeSeats = planes.get(planeType);
+        String airlineName = airlines.get(airlineCode);
+
+        if (flights.containsKey(flightCode)) {
+            thisFlight = flights.get(flightCode);
+        } else {
+            thisFlight = new Flight();
+            thisFlight.setFlightDetails(airlineCode, airlineName, flightCode, origAirportCode, destAirportCode, planeType, planeSeats);
+        } thisFlight.addDay(dayOfWeek);
+
+        flights.put(flightCode, thisFlight);
+        //datastore.save(thisFlight);
     }
 
     public void addTraveler(int travelerId, String name) {
