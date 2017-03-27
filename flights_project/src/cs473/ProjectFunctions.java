@@ -14,6 +14,8 @@ public class ProjectFunctions {
     private final Map<String, Airport> airports = new HashMap<>();
     private final Map<String, Integer> planes = new HashMap<>();
     private final Map<String, Flight> flights = new HashMap<>();
+    private final Map<Integer, String> travelers = new HashMap<>();
+    private final Map<Integer, Reservation> reservations = new HashMap<>();
 
     public ProjectFunctions(Datastore datastore) {
         this.datastore = datastore;
@@ -28,7 +30,9 @@ public class ProjectFunctions {
         System.out.println(String.format("Adding airport %s\t%s\t%s", airportCode, state, city));
 
         Airport thisAirport = new Airport(airportCode, city, state);
-        airports.put(airportCode, thisAirport);
+        //airports.put(airportCode, thisAirport);
+
+        datastore.save(thisAirport);
     }
 
     public void addPlane(String planeType, int seats) {
@@ -51,14 +55,23 @@ public class ProjectFunctions {
         } thisFlight.addDay(dayOfWeek);
 
         flights.put(flightCode, thisFlight);
-        //datastore.save(thisFlight);
+
+        datastore.save(thisFlight);
     }
 
     public void addTraveler(int travelerId, String name) {
         System.out.println(String.format("Adding traveller %d\t%s", travelerId, name));
+        travelers.put(travelerId, name);
     }
 
     public void makeReservation(int reservationId, int travelerId, String flightCode, int dayOfWeek, Date date) {
         System.out.println(String.format("Making reservation %d for traveller %d on flight %s for the date %s", reservationId, travelerId, flightCode, date.toString()));
+
+        String travelerName = travelers.get(travelerId);
+        Reservation thisReserve = new Reservation(reservationId, travelerId, travelerName, flightCode, dayOfWeek, date);
+
+        //reservations.put(reservationId, thisReserve);
+
+        datastore.save(thisReserve);
     }
 }
