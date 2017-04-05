@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a4e01c22-0d39-43c4-abe5-1f4bd0a59d41" name="Default" comment="Merge branch 'master' of github.com:harrisonlingren/cs473&#10;&#10;# Conflicts:&#10;#&#9;flights_project/.idea/workspace.xml">
+    <list default="true" id="a4e01c22-0d39-43c4-abe5-1f4bd0a59d41" name="Default" comment="">
+      <change type="DELETED" beforePath="$PROJECT_DIR$/run.sh" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/cs473/Airline.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/cs473/Airport.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/cs473/Flight.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/cs473/Main.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/cs473/ProjectFunctions.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/cs473/Reservation.class" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
@@ -40,8 +47,8 @@
       <file leaf-file-name="Main.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/cs473/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="400">
-              <caret line="31" column="34" lean-forward="true" selection-start-line="31" selection-start-column="34" selection-end-line="31" selection-end-column="34" />
+            <state relative-caret-position="340">
+              <caret line="28" column="81" lean-forward="false" selection-start-line="28" selection-start-column="81" selection-end-line="28" selection-end-column="81" />
               <folding />
             </state>
           </provider>
@@ -757,8 +764,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/cs473/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="400">
-          <caret line="31" column="34" lean-forward="true" selection-start-line="31" selection-start-column="34" selection-end-line="31" selection-end-column="34" />
+        <state relative-caret-position="340">
+          <caret line="28" column="81" lean-forward="false" selection-start-line="28" selection-start-column="81" selection-end-line="28" selection-end-column="81" />
           <folding />
         </state>
       </provider>
