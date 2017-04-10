@@ -14,11 +14,18 @@ public class QueryFunctions {
     /**
      * Returns all flights between the two airports on a given date. Note that I have simplified this from the
      * original requirements that specified a date range.  This function returns a generic Object so you can return
-     * any object type that makes sense for your data model. The class your return should override the toString() method
+     * any object type that makes sense for your data model. The class you return should override the toString() method
      * and print something useful. Look at the sample Airline object for an example of this.
      */
-    public List<Object> flightAvailability(String originationAirportCode, String destinationAirportCode, Date date) {
-        return null;
+    public List<Flight> flightAvailability(String originationAirportCode, String destinationAirportCode, Date date) {
+
+        List<Flight> availability = datastore.createQuery(Flight.class)
+                .field(getDateStr(dayOfWeek(date))).equal(1)
+                .field("origin").equal(originationAirportCode)
+                .field("dest").equal(destinationAirportCode)
+                .asList();
+
+        return availability;
     }
 
     /**
@@ -27,7 +34,13 @@ public class QueryFunctions {
      * false then you should check flight arriving at the airport that day. I have simplified this to a single date
      * instead of a date range.
      */
-    public List<Object> flightOverbooked(boolean checkOriginationCity, String airportCode, Date date) {
+    public List<Flight> flightOverbooked(boolean checkOriginationCity, String airportCode, Date date) {
+
+       /* List<Flight> overbooked = datastore.createQuery(Flight.class)
+
+
+                .asList();
+*/
         return null;
     }
 
@@ -84,6 +97,37 @@ public class QueryFunctions {
         Calendar c = Calendar.getInstance();
         c.setTime(date);
         return c.get(Calendar.DAY_OF_WEEK) - 1;
+    }
+
+    private String getDateStr(int d) {
+        String qStr;
+        switch (dayOfWeek(date)) {
+            case 0:
+                qStr = "sun";
+                break;
+            case 1:
+                qStr = "mon";
+                break;
+            case 2:
+                qStr = "tue";
+                break;
+            case 3:
+                qStr = "wed";
+                break;
+            case 4:
+                qStr = "thu";
+                break;
+            case 5:
+                qStr = "fri";
+                break;
+            case 6:
+                qStr = "sat";
+                break;
+            default:
+                qStr = "sun";
+                break;
+        }
+        return qStr;
     }
 
 
