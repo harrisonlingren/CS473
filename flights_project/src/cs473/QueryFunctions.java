@@ -1,6 +1,8 @@
 package cs473;
 
 import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.query.FindOptions;
+import org.mongodb.morphia.query.Query;
 
 import java.util.*;
 
@@ -35,12 +37,17 @@ public class QueryFunctions {
      * instead of a date range.
      */
     public List<Flight> flightOverbooked(boolean checkOriginationCity, String airportCode, Date date) {
+        Query<Flight> found = datastore.createQuery(Flight.class)
+                .field(getDateStr(dayOfWeek(date))).equal(1);
 
-       /* List<Flight> overbooked = datastore.createQuery(Flight.class)
+        if (checkOriginationCity) {
+            found.field("origin").equal(airportCode);
+        } else {
+            found.field("dest").equal(airportCode);
+        }
 
 
-                .asList();
-*/
+
         return null;
     }
 
@@ -101,7 +108,7 @@ public class QueryFunctions {
 
     private String getDateStr(int d) {
         String qStr;
-        switch (dayOfWeek(date)) {
+        switch (d) {
             case 0:
                 qStr = "sun";
                 break;
