@@ -71,7 +71,6 @@ public class ProjectFunctions {
         Reservation thisReserve = new Reservation(reservationId, travelerId, travelerName, flightCode, dayOfWeek, date);
 
         //reservations.put(reservationId, thisReserve);
-
         datastore.save(thisReserve);
     }
 }
