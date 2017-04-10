@@ -2,6 +2,7 @@ package cs473;
 
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.query.FindOptions;
+import org.mongodb.morphia.query.MorphiaIterator;
 import org.mongodb.morphia.query.Query;
 
 import java.util.*;
@@ -46,6 +47,7 @@ public class QueryFunctions {
             found.field("dest").equal(airportCode);
         }
 
+        //MorphiaIterator<Flight> mi = datastore.
 
 
         return null;
@@ -77,6 +79,8 @@ public class QueryFunctions {
      * different airport than the one with the lowest demand.
      */
     public String mostAvailableSeats(Date date) {
+
+
         return null;
     }
 
