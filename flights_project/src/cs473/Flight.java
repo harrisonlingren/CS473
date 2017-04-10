@@ -32,7 +32,16 @@ public class Flight {
     private String code;
     private String origin;
     private String dest;
-    private ArrayList<Integer> days;
+    //private ArrayList<Integer> days;
+
+    // flight dates
+    private int sun;
+    private int mon;
+    private int tue;
+    private int wed;
+    private int thu;
+    private int fri;
+    private int sat;
 
     // airline info
     private String airlineCode;
@@ -50,11 +59,28 @@ public class Flight {
         this.dest = "";
         this.planeCode = "";
         this.planeSeats = 0;
-        this.days = new ArrayList<>();
+        //this.days = new ArrayList<>();
+
+        this.sun = 0;
+        this.mon = 0;
+        this.tue = 0;
+        this.wed = 0;
+        this.thu = 0;
+        this.fri = 0;
+        this.sat = 0;
     }
 
     public void addDay(int day) {
-        this.days.add(day);
+        switch (day) {
+            case 0: this.sun = 1; break;
+            case 1: this.mon = 1; break;
+            case 2: this.tue = 1; break;
+            case 3: this.wed = 1; break;
+            case 4: this.thu = 1; break;
+            case 5: this.fri = 1; break;
+            case 6: this.sat = 1; break;
+            default: break;
+        }
     }
 
     public void setFlightDetails(String airlineCode, String airlineName, String code, String origin, String dest, String planeCode, int planeSeats) {

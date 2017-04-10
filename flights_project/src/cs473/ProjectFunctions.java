@@ -52,10 +52,11 @@ public class ProjectFunctions {
         } else {
             thisFlight = new Flight();
             thisFlight.setFlightDetails(airlineCode, airlineName, flightCode, origAirportCode, destAirportCode, planeType, planeSeats);
-        } thisFlight.addDay(dayOfWeek);
+        }
+
+        thisFlight.addDay(dayOfWeek);
 
         flights.put(flightCode, thisFlight);
-
         datastore.save(thisFlight);
     }
 
@@ -71,7 +72,6 @@ public class ProjectFunctions {
         Reservation thisReserve = new Reservation(reservationId, travelerId, travelerName, flightCode, dayOfWeek, date);
 
         //reservations.put(reservationId, thisReserve);
-
         datastore.save(thisReserve);
     }
 }
