@@ -52,9 +52,7 @@ public class ProjectFunctions {
         } else {
             thisFlight = new Flight();
             thisFlight.setFlightDetails(airlineCode, airlineName, flightCode, origAirportCode, destAirportCode, planeType, planeSeats);
-        }
-
-        thisFlight.addDay(dayOfWeek);
+        } thisFlight.addDay(dayOfWeek);
 
         flights.put(flightCode, thisFlight);
         datastore.save(thisFlight);

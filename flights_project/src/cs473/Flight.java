@@ -32,7 +32,7 @@ public class Flight {
     private String code;
     private String origin;
     private String dest;
-    //private ArrayList<Integer> days;
+    private ArrayList<Integer> days;
 
     // flight dates
     private int sun;
@@ -59,7 +59,7 @@ public class Flight {
         this.dest = "";
         this.planeCode = "";
         this.planeSeats = 0;
-        //this.days = new ArrayList<>();
+        // this.days = new ArrayList<>();
 
         this.sun = 0;
         this.mon = 0;
@@ -82,6 +82,10 @@ public class Flight {
             default: break;
         }
     }
+
+    /*public void addDay(int day) {
+        this.days.add(day);
+    }*/
 
     public void setFlightDetails(String airlineCode, String airlineName, String code, String origin, String dest, String planeCode, int planeSeats) {
         this.code = code;
