@@ -99,7 +99,7 @@ public class Main {
                     List<Flight> availableFlights = queryFunctions.flightAvailability(o, d, new java.util.Date());
                     println("Results:");
                     for(Flight x: availableFlights) {
-                        print("Flight " + availableFlights.get(0).getCode() + ", ");
+                        print("Flight " + x.getCode() + ", ");
                     } println("");
                     break;
 
