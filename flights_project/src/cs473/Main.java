@@ -10,10 +10,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Date;
-import java.util.function.Function;
+import java.util.List;
+import java.util.Scanner;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 import java.util.stream.Stream;
 
 public class Main {
+
 
     private static void loadFile(ProjectFunctions pf, String fileName) {
         //read file into stream, try-with-resources
@@ -41,12 +45,17 @@ public class Main {
                         break;
                 }
             });
+
+            println("Success!");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public static void main(String[] args) {
+        Logger mongoLogger = Logger.getLogger( "org.mongodb" );
+        mongoLogger.setLevel(Level.SEVERE); // e.g. or Log.WARNING, etc.
+
         // Create the Morphia instance through which all access to Mongo is going to occur
         final Morphia morphia = new Morphia();
 
@@ -72,6 +81,43 @@ public class Main {
         final QueryFunctions queryFunctions = new QueryFunctions(datastore);
 
         // Run this function to load data, comment it out if you are querying data
-        loadFile(pf, dataFile);
+        //loadFile(pf, dataFile);
+
+        String blurb = "\nqueries!";
+
+        String cmd = ""; Scanner input = new Scanner(System.in);
+        do {
+            println(blurb);
+            print("Select query to run (type 'q' to quit): ");
+            cmd = input.next().toLowerCase();
+
+            switch (cmd) {
+                // query 1
+                case "1":
+                    print("Enter origin airport: "); String o = input.next().toUpperCase();
+                    print("Enter destination airport: "); String d = input.next().toUpperCase();
+                    List<Flight> availableFlights = queryFunctions.flightAvailability(o, d, new java.util.Date());
+                    println("Results:");
+                    for(Flight x: availableFlights) {
+                        print("Flight " + availableFlights.get(0).getCode() + ", ");
+                    } println("");
+                    break;
+
+                // query 2
+                case "2":
+
+                case "q": break;
+                default:
+                    println("Invalid command. Please enter 'q' if you want to quit.");
+            }
+        } while(!cmd.equals("q"));
+    }
+
+    private static void print(Object in) {
+        System.out.print(in.toString());
+    }
+
+    private static void println(Object in) {
+        System.out.println(in.toString());
     }
 }
