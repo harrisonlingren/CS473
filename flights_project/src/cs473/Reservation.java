@@ -31,7 +31,7 @@ public class Reservation {
         this.travelerId = travelerId;
         this.travelerName = travelerName;
         this.flight = flight;
-        this.DoW = DoW;
+        this.DoW = day;
         this.date = date;
     }
 }
