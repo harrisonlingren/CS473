@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Logger;
@@ -105,7 +106,20 @@ public class Main {
 
                 // query 2
                 case "2":
-
+                    List<Flight> overbookedFlights = queryFunctions.flightOverbooked(true, "ORD", Date.valueOf("2017-03-06"));
+                    for(Flight x: overbookedFlights) {
+                        print("Flight " + x.getCode() + ", ");
+                    } println("");
+                    break;
+                case "5":
+                    java.text.DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                    java.util.Date dt;
+                    try {
+                        dt = df.parse("2016-01-19");
+                        println(queryFunctions.mostAvailableSeats(dt));
+                    } catch (Exception e) {
+                        System.out.println("FUCKKKKKKK");  //TODO: actually throw a error
+                    }
                 case "q": break;
                 default:
                     println("Invalid command. Please enter 'q' if you want to quit.");

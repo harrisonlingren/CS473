@@ -1,9 +1,26 @@
 package cs473;
 
 import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.aggregation.Accumulator;
+import org.mongodb.morphia.aggregation.AggregationPipeline;
+import org.mongodb.morphia.aggregation.Group;
+import org.mongodb.morphia.aggregation.Projection;
+import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.query.FindOptions;
 import org.mongodb.morphia.query.MorphiaIterator;
 import org.mongodb.morphia.query.Query;
+import org.mongodb.morphia.query.Sort;
+import org.mongodb.morphia.annotations.Id;
+
+
+import static org.mongodb.morphia.aggregation.Group.grouping;
+import static org.mongodb.morphia.aggregation.Accumulator.accumulator;
+import static org.mongodb.morphia.aggregation.Group.sum;
+import static org.mongodb.morphia.aggregation.Group.push;
+import static org.mongodb.morphia.aggregation.Projection.projection;
+import static org.mongodb.morphia.aggregation.Projection.expression;
+import static org.mongodb.morphia.aggregation.Projection.subtract;
+
 
 import java.util.*;
 
@@ -38,19 +55,22 @@ public class QueryFunctions {
      * instead of a date range.
      */
     public List<Flight> flightOverbooked(boolean checkOriginationCity, String airportCode, Date date) {
-        Query<Flight> found = datastore.createQuery(Flight.class)
-                .field(getDateStr(dayOfWeek(date))).equal(1);
-
-        if (checkOriginationCity) {
-            found.field("origin").equal(airportCode);
-        } else {
-            found.field("dest").equal(airportCode);
-        }
-
-        //MorphiaIterator<Flight> mi = datastore.
 
 
-        return null;
+        Iterator<Flight> aggregate = datastore.createAggregation(Reservation.class)
+                .match(datastore.createQuery(Reservation.class).field("date").equal(date))
+                .lookup("Flight", "flight", "_id", "flight")
+                .match(datastore.createQuery(Flight.class).field(checkOriginationCity ? "origin" : "dest").equal(airportCode))
+                .group(Group.id(grouping("flight")), grouping("reservations", accumulator("$sum", 1)))
+                .unwind("_id.flight")
+                .project(projection("isOverbooked", expression("$gt", "$_id.flight.planeSeats", "$reservations")))
+                .match(datastore.getQueryFactory().createQuery(datastore).field("isOverbooked").equal(true))
+                .aggregate(Flight.class);
+
+        List<Flight> flights = new ArrayList<>();
+        aggregate.forEachRemaining(flights::add);
+
+        return flights;
     }
 
     /**
@@ -80,8 +100,20 @@ public class QueryFunctions {
      */
     public String mostAvailableSeats(Date date) {
 
+        Iterator<CountResult> results = datastore.createAggregation(Reservation.class)
+                .match(datastore.createQuery(Reservation.class).field("date").equal(date))
+                .group("flight", grouping("reservations", push("_id")))
+                .project(projection("flight", "_id"), projection("numReservations", subtract(projection("size"), projection("reservations"))))
+                .lookup("Flight", "flight", "_id", "flight")
+                .unwind("flight")
+                .project(projection("reservation"), projection("availableSeats", "flight.planeSeats"), projection("flight"))
+                .group("flight.origin", grouping("sold", sum("reservations")), grouping("seats", sum("availableSeats")))
+                .project(projection("left", subtract(projection( "seats"), projection("sold"))), projection("sold"), projection("seats"))
+                .sort(Sort.descending("left"))
+                .limit(1)
+                .aggregate(CountResult.class);
 
-        return null;
+        return results.next().getCode();
     }
 
     /**
@@ -141,5 +173,24 @@ public class QueryFunctions {
         return qStr;
     }
 
+    @Entity("counts")
+    public static class CountResult {
+        @Id
+        private String airportCode;
+        private int seats;
+        private int sold;
+        private int left;
+
+        public String getCode() {
+            return this.airportCode;
+        }
+
+        public CountResult() {
+            airportCode = "";
+            seats = 0;
+            sold = 0;
+            left = 0;
+        }
+    }
 
 }

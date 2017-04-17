@@ -34,4 +34,13 @@ public class Reservation {
         this.DoW = day;
         this.date = date;
     }
+
+    public Reservation(){
+        this.id = 0;
+        this.travelerId = 0;
+        this.travelerName = "";
+        this.flight = "";
+        this.DoW = 0;
+        this.date = new Date();
+    }
 }
