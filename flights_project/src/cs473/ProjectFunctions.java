@@ -22,12 +22,12 @@ public class ProjectFunctions {
     }
 
     public void addAirline(String airlineCode, String name) {
-        System.out.println(String.format("Adding airline %s\t%s", airlineCode, name));
+        //System.out.println(String.format("Adding airline %s\t%s", airlineCode, name));
         airlines.put(airlineCode, name);
     }
 
     public void addAirport(String airportCode, String state, String city) {
-        System.out.println(String.format("Adding airport %s\t%s\t%s", airportCode, state, city));
+        //System.out.println(String.format("Adding airport %s\t%s\t%s", airportCode, state, city));
 
         Airport thisAirport = new Airport(airportCode, city, state);
         //airports.put(airportCode, thisAirport);
@@ -36,12 +36,12 @@ public class ProjectFunctions {
     }
 
     public void addPlane(String planeType, int seats) {
-        System.out.println(String.format("Adding plane %s\t%d seats", planeType, seats));
+        //System.out.println(String.format("Adding plane %s\t%d seats", planeType, seats));
         planes.put(planeType, seats);
     }
 
     public void addFlight(String airlineCode, String flightCode, int dayOfWeek, String origAirportCode, String destAirportCode, String planeType) {
-        System.out.println(String.format("Adding flight %s\tfrom %s to %s on %d\tplane %s", flightCode, origAirportCode, destAirportCode, dayOfWeek, planeType));
+        //System.out.println(String.format("Adding flight %s\tfrom %s to %s on %d\tplane %s", flightCode, origAirportCode, destAirportCode, dayOfWeek, planeType));
 
         Flight thisFlight;
         int planeSeats = planes.get(planeType);
@@ -59,12 +59,12 @@ public class ProjectFunctions {
     }
 
     public void addTraveler(int travelerId, String name) {
-        System.out.println(String.format("Adding traveller %d\t%s", travelerId, name));
+        //System.out.println(String.format("Adding traveller %d\t%s", travelerId, name));
         travelers.put(travelerId, name);
     }
 
     public void makeReservation(int reservationId, int travelerId, String flightCode, int dayOfWeek, Date date) {
-        System.out.println(String.format("Making reservation %d for traveller %d on flight %s for the date %s", reservationId, travelerId, flightCode, date.toString()));
+        //System.out.println(String.format("Making reservation %d for traveller %d on flight %s for the date %s", reservationId, travelerId, flightCode, date.toString()));
 
         String travelerName = travelers.get(travelerId);
         Reservation thisReserve = new Reservation(reservationId, travelerId, travelerName, flightCode, dayOfWeek, date);

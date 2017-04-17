@@ -39,6 +39,67 @@ public class Flight {
     private int mon;
     private int tue;
     private int wed;
+
+    public String getCode() {
+        return code;
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public String getDest() {
+        return dest;
+    }
+
+    public ArrayList<Integer> getDays() {
+        return days;
+    }
+
+    public int getSun() {
+        return sun;
+    }
+
+    public int getMon() {
+        return mon;
+    }
+
+    public int getTue() {
+        return tue;
+    }
+
+    public int getWed() {
+        return wed;
+    }
+
+    public int getThu() {
+        return thu;
+    }
+
+    public int getFri() {
+        return fri;
+    }
+
+    public int getSat() {
+        return sat;
+    }
+
+    public String getAirlineCode() {
+        return airlineCode;
+    }
+
+    public String getAirlineName() {
+        return airlineName;
+    }
+
+    public String getPlaneCode() {
+        return planeCode;
+    }
+
+    public int getPlaneSeats() {
+        return planeSeats;
+    }
+
     private int thu;
     private int fri;
     private int sat;
