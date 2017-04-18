@@ -17,9 +17,7 @@ import static org.mongodb.morphia.aggregation.Group.grouping;
 import static org.mongodb.morphia.aggregation.Accumulator.accumulator;
 import static org.mongodb.morphia.aggregation.Group.sum;
 import static org.mongodb.morphia.aggregation.Group.push;
-import static org.mongodb.morphia.aggregation.Projection.projection;
-import static org.mongodb.morphia.aggregation.Projection.expression;
-import static org.mongodb.morphia.aggregation.Projection.subtract;
+import static org.mongodb.morphia.aggregation.Projection.*;
 
 
 import java.util.*;
@@ -81,7 +79,20 @@ public class QueryFunctions {
      * Demand is to be calculated as the percentage of possible seats originating at the airport that are sold.
      */
     public String highestDemand(Date date) {
-        return null;
+        Iterator<CountResult> results = datastore.createAggregation(Reservation.class)
+                .match(datastore.createQuery(Reservation.class).field("date").equal(date))
+                .group("flight", grouping("reservations", push("_id")))
+                .project(projection("flight", "_id"), projection("reservations", subtract(projection("size"), projection("reservations"))))
+                .lookup("Flight", "flight", "_id", "flight")
+                .unwind("flight")
+                .project(projection("reservations"), projection("availableSeats", "flight.planeSeats"), projection("flight"))
+                .group("flight.origin", grouping("sold", sum("reservations")), grouping("seats", sum("availableSeats")))
+                .project(projection("result", multiply( divide( projection("seats"), projection("sold") ), 100 )), projection("sold"), projection("seats"))
+                .sort(Sort.descending("result"))
+                .limit(1)
+                .aggregate(CountResult.class);
+
+        return results.next().getCode();
     }
 
     /**
@@ -90,7 +101,20 @@ public class QueryFunctions {
      * flights. This is also looking for the lowest demand, computed with the same definition as above.
      */
     public String lowestDemand(int dayOfWeek) {
-        return null;
+        Iterator<CountResult> results = datastore.createAggregation(Reservation.class)
+                .match(datastore.createQuery(Reservation.class).field("DoW").equal(dayOfWeek))
+                .group("flight", grouping("reservations", push("_id")))
+                .project(projection("flight", "_id"), projection("reservations", subtract(projection("size"), projection("reservations"))))
+                .lookup("Flight", "flight", "_id", "flight")
+                .unwind("flight")
+                .project(projection("reservations"), projection("availableSeats", "flight.planeSeats"), projection("flight"))
+                .group("flight.origin", grouping("sold", sum("reservations")), grouping("seats", sum("availableSeats")))
+                .project(projection("result", multiply( divide( projection("seats"), projection("sold") ), 100 )), projection("sold"), projection("seats"))
+                .sort(Sort.ascending("result"))
+                .limit(1)
+                .aggregate(CountResult.class);
+
+        return results.next().getCode();
     }
 
     /**
@@ -108,8 +132,8 @@ public class QueryFunctions {
                 .unwind("flight")
                 .project(projection("reservation"), projection("availableSeats", "flight.planeSeats"), projection("flight"))
                 .group("flight.origin", grouping("sold", sum("reservations")), grouping("seats", sum("availableSeats")))
-                .project(projection("left", subtract(projection( "seats"), projection("sold"))), projection("sold"), projection("seats"))
-                .sort(Sort.descending("left"))
+                .project(projection("result", subtract(projection( "seats"), projection("sold"))), projection("sold"), projection("seats"))
+                .sort(Sort.descending("result"))
                 .limit(1)
                 .aggregate(CountResult.class);
 
@@ -179,7 +203,7 @@ public class QueryFunctions {
         private String airportCode;
         private int seats;
         private int sold;
-        private int left;
+        private int result;
 
         public String getCode() {
             return this.airportCode;
@@ -189,7 +213,7 @@ public class QueryFunctions {
             airportCode = "";
             seats = 0;
             sold = 0;
-            left = 0;
+            result = 0;
         }
     }
 

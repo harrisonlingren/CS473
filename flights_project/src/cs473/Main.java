@@ -92,6 +92,9 @@ public class Main {
             print("Select query to run (type 'q' to quit): ");
             cmd = input.next().toLowerCase();
 
+            java.text.DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            java.util.Date dt;
+
             switch (cmd) {
                 // query 1
                 case "1":
@@ -111,20 +114,62 @@ public class Main {
                         print("Flight " + x.getCode() + ", ");
                     } println("");
                     break;
-                case "5":
-                    java.text.DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-                    java.util.Date dt;
+
+                case "3":
+                    print("Enter date to search (yyy-mm-dd): "); String dh = input.next();
                     try {
-                        dt = df.parse("2016-01-19");
-                        println(queryFunctions.mostAvailableSeats(dt));
+                        dt = df.parse("2016-10-22");
+                        println("Airport with highest demand on " + dh + ": " + queryFunctions.highestDemand(dt));
+                    } catch (Exception e) {
+                        System.out.println("FUCKKKKKKK");  //TODO: actually throw a error
+
+                    }
+
+                    break;
+
+                case "4":
+                    print("Enter day of week to search: "); String dl = input.next().toLowerCase();
+                    int dow = getDay(dl);
+                    String lowestDemand = queryFunctions.lowestDemand(dow);
+                    println("Airport with lowest demand on " + dl + ": " + lowestDemand);
+                    break;
+
+                case "5":
+                    print("Enter date to search (yyy-mm-dd): "); String da = input.next();
+                    try {
+                        dt = df.parse(da);
+                        println("Airport with most availability on " + da + ": " + queryFunctions.mostAvailableSeats(dt));
                     } catch (Exception e) {
                         System.out.println("FUCKKKKKKK");  //TODO: actually throw a error
                     }
+                    break;
+
                 case "q": break;
                 default:
                     println("Invalid command. Please enter 'q' if you want to quit.");
             }
         } while(!cmd.equals("q"));
+    }
+
+    private static int getDay(String d) {
+        int a;
+        d = d.toLowerCase();
+        switch (d) {
+            case "sat":case "saturday":
+                a = 6; break;
+            case "fri":case "friday":
+                a = 5; break;
+            case "thu":case "thursday":
+                a = 4; break;
+            case "wed":case "wednesday":
+                a = 3; break;
+            case "tue":case "tuesday":
+                a = 2; break;
+            case "mon":case "monday":
+                a = 1; break;
+            case "sun":case "sunday": default:
+                a = 0; break;
+        } return a;
     }
 
     private static void print(Object in) {
