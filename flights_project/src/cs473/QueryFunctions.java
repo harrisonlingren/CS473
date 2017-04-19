@@ -56,18 +56,21 @@ public class QueryFunctions {
 
 
         Iterator<FlightResult> result = datastore.createAggregation(Reservation.class)
-                .match(datastore.createQuery(Reservation.class).field("date").equal(date))
+                .match(datastore.getQueryFactory().createQuery(datastore).field("date").equal(date))
                 .lookup("Flight", "flight", "_id", "flight")
-                .match(datastore.createQuery(Flight.class).field(checkOriginationCity ? "origin" : "dest").equal(airportCode))
+                .match(datastore.getQueryFactory().createQuery(datastore).field(checkOriginationCity ? "flight.origin" : "flight.dest").equal(airportCode))
+                .unwind("flight")
                 .group(Group.id(grouping("flight")), grouping("reservations", accumulator("$sum", 1)))
-                .unwind("_id.flight")
-                .project(projection("isOverbooked", expression("$gt", "_id.flight.planeSeats", "reservations")))
-                .match(datastore.getQueryFactory().createQuery(datastore).field("isOverbooked").equal(false))
+                .project(projection("_id").suppress(),projection("flight", "_id.flight"),
+                        projection("isOverbooked", expression("$gt", "_id.flight.planeSeats", "reservations")))
+                .match(datastore.getQueryFactory().createQuery(datastore).field("isOverbooked").equal(true))
                 .aggregate(FlightResult.class);
 
         List<Flight> flights = new ArrayList<>();
-        while(result.hasNext())
-            flights.add(result.next().contain.flight);
+
+        while(result.hasNext()){
+            flights.add(result.next().flight);
+        }
 
         return flights;
     }
@@ -218,22 +221,12 @@ public class QueryFunctions {
         }
     }
 
-    @Entity("flightResult")
     public static class FlightResult {
-        @Id
-        private FlightResultContain contain;
-
-        public FlightResult() {
-            contain = new FlightResultContain();
-        }
-    }
-    @Entity("flightResultContain")
-    public static class FlightResultContain {
-        @Id
         private Flight flight;
-        public FlightResultContain() {
+        public FlightResult() {
             flight = new Flight();
         }
     }
+
 
 }
