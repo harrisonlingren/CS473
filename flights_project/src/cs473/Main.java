@@ -11,6 +11,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Logger;
@@ -84,17 +86,15 @@ public class Main {
         // Run this function to load data, comment it out if you are querying data
         //loadFile(pf, dataFile);
 
-        String blurb = "\nqueries!";
 
-        String cmd = ""; Scanner input = new Scanner(System.in);
+        String cmd; Scanner input = new Scanner(System.in);
         do {
-            println(blurb);
             print("Select query to run (type 'q' to quit): ");
             cmd = input.next().toLowerCase();
 
             java.text.DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-            java.util.Date dt;
-
+            java.util.Date date = Date.from(Instant.now());
+            String dateString;
             switch (cmd) {
                 // query 1
                 case "1":
@@ -109,39 +109,49 @@ public class Main {
 
                 // query 2
                 case "2":
-                    List<Flight> overbookedFlights = queryFunctions.flightOverbooked(true, "ORD", Date.valueOf("2017-03-06"));
-                    for(Flight x: overbookedFlights) {
-                        print("Flight " + x.getCode() + ", ");
-                    } println("");
+                    print("Origin or Destination: "); boolean checkOriginationCity = false;
+                    if (input.next().toUpperCase().charAt(0) == 'O') checkOriginationCity = true;
+                    print("Enter airport: "); String airport = input.next().toUpperCase();
+                    print("Enter date to search (yyyy-mm-dd): ");  dateString = input.next();
+                    try {
+                        date = df.parse(dateString);
+                    } catch (Exception e) {
+                        System.out.println("Cannot parse date.");
+                    }
+                    Iterator<Flight> overbookedFlights = queryFunctions.flightOverbooked(checkOriginationCity, airport, date).iterator();
+                    if (overbookedFlights.hasNext())
+                        System.out.println("Overbooked flights:");
+                    else
+                        System.out.println("No overbooked flights found.");
+                    while (overbookedFlights.hasNext())
+                        System.out.println(overbookedFlights.next().getCode());
                     break;
 
                 case "3":
-                    print("Enter date to search (yyy-mm-dd): "); String dh = input.next();
+                    print("Enter date to search (yyyy-mm-dd): "); dateString = input.next();
                     try {
-                        dt = df.parse("2016-10-22");
-                        println("Airport with highest demand on " + dh + ": " + queryFunctions.highestDemand(dt));
+                        date = df.parse(dateString);
                     } catch (Exception e) {
-                        System.out.println("FUCKKKKKKK");  //TODO: actually throw a error
-
+                        System.out.println("Cannot parse date.");
                     }
-
+                    println("Airport with highest demand on " + date.toString() + ": " + queryFunctions.highestDemand(date));
                     break;
 
                 case "4":
-                    print("Enter day of week to search: "); String dl = input.next().toLowerCase();
-                    int dow = getDay(dl);
+                    print("Enter day of week to search: "); dateString = input.next().toLowerCase();
+                    int dow = getDay(dateString);
                     String lowestDemand = queryFunctions.lowestDemand(dow);
-                    println("Airport with lowest demand on " + dl + ": " + lowestDemand);
+                    println("Airport with lowest demand on " + dateString + ": " + lowestDemand);
                     break;
 
                 case "5":
-                    print("Enter date to search (yyy-mm-dd): "); String da = input.next();
+                    print("Enter date to search (yyyy-mm-dd): "); dateString = input.next();
                     try {
-                        dt = df.parse(da);
-                        println("Airport with most availability on " + da + ": " + queryFunctions.mostAvailableSeats(dt));
+                        date = df.parse(dateString);
                     } catch (Exception e) {
-                        System.out.println("FUCKKKKKKK");  //TODO: actually throw a error
+                        System.out.println("Cannot parse date.");
                     }
+                    println("Airport with most availability on " + date.toString() + ": " + queryFunctions.mostAvailableSeats(date));
                     break;
 
                 case "q": break;

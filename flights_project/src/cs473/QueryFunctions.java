@@ -55,18 +55,19 @@ public class QueryFunctions {
     public List<Flight> flightOverbooked(boolean checkOriginationCity, String airportCode, Date date) {
 
 
-        Iterator<Flight> aggregate = datastore.createAggregation(Reservation.class)
+        Iterator<FlightResult> result = datastore.createAggregation(Reservation.class)
                 .match(datastore.createQuery(Reservation.class).field("date").equal(date))
                 .lookup("Flight", "flight", "_id", "flight")
                 .match(datastore.createQuery(Flight.class).field(checkOriginationCity ? "origin" : "dest").equal(airportCode))
                 .group(Group.id(grouping("flight")), grouping("reservations", accumulator("$sum", 1)))
                 .unwind("_id.flight")
-                .project(projection("isOverbooked", expression("$gt", "$_id.flight.planeSeats", "$reservations")))
-                .match(datastore.getQueryFactory().createQuery(datastore).field("isOverbooked").equal(true))
-                .aggregate(Flight.class);
+                .project(projection("isOverbooked", expression("$gt", "_id.flight.planeSeats", "reservations")))
+                .match(datastore.getQueryFactory().createQuery(datastore).field("isOverbooked").equal(false))
+                .aggregate(FlightResult.class);
 
         List<Flight> flights = new ArrayList<>();
-        aggregate.forEachRemaining(flights::add);
+        while(result.hasNext())
+            flights.add(result.next().contain.flight);
 
         return flights;
     }
@@ -87,7 +88,7 @@ public class QueryFunctions {
                 .unwind("flight")
                 .project(projection("reservations"), projection("availableSeats", "flight.planeSeats"), projection("flight"))
                 .group("flight.origin", grouping("sold", sum("reservations")), grouping("seats", sum("availableSeats")))
-                .project(projection("result", multiply( divide( projection("seats"), projection("sold") ), 100 )), projection("sold"), projection("seats"))
+                .project(projection("result", multiply( divide( projection("sold"), projection("seats") ), 100 )), projection("sold"), projection("seats"))
                 .sort(Sort.descending("result"))
                 .limit(1)
                 .aggregate(CountResult.class);
@@ -109,7 +110,7 @@ public class QueryFunctions {
                 .unwind("flight")
                 .project(projection("reservations"), projection("availableSeats", "flight.planeSeats"), projection("flight"))
                 .group("flight.origin", grouping("sold", sum("reservations")), grouping("seats", sum("availableSeats")))
-                .project(projection("result", multiply( divide( projection("seats"), projection("sold") ), 100 )), projection("sold"), projection("seats"))
+                .project(projection("result", multiply( divide( projection("sold"), projection("seats") ), 100 )), projection("sold"), projection("seats"))
                 .sort(Sort.ascending("result"))
                 .limit(1)
                 .aggregate(CountResult.class);
@@ -214,6 +215,24 @@ public class QueryFunctions {
             seats = 0;
             sold = 0;
             result = 0;
+        }
+    }
+
+    @Entity("flightResult")
+    public static class FlightResult {
+        @Id
+        private FlightResultContain contain;
+
+        public FlightResult() {
+            contain = new FlightResultContain();
+        }
+    }
+    @Entity("flightResultContain")
+    public static class FlightResultContain {
+        @Id
+        private Flight flight;
+        public FlightResultContain() {
+            flight = new Flight();
         }
     }
 
